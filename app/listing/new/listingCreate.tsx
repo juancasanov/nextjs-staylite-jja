@@ -44,7 +44,7 @@ function readRoles(): string[] {
 export default function NewListingPage() {
   const router = useRouter();
   const { draft, setDraft, clearDraft } = useListingDraft();
-  const { createLodging, loading: creating, error: createError } = useCreateLodging('https://staylite-app-9d35e.ondigitalocean.app/');
+  const { createLodging, loading: creating, error: createError } = useCreateLodging('https://staylite-app-9d35e.ondigitalocean.app');
 
   const [imageFiles, setImageFiles] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
