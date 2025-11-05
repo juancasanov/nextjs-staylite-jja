@@ -21,7 +21,7 @@ export const useProfileData = (userId: string | null, userRoles: string[] = []) 
   const API_BASE =
     process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== ''
       ? process.env.NEXT_PUBLIC_API_URL
-      : 'http://localhost:3000';
+      : '';
 
   /**
    * Función para obtener los alojamientos del host

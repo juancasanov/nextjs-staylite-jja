@@ -31,7 +31,7 @@ export const useUserBooking = (lodgingId: string | null): UseUserBookingReturn =
   const API_BASE =
     process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== ''
       ? process.env.NEXT_PUBLIC_API_URL
-      : 'http://localhost:3000';
+      : '';
 
   useEffect(() => {
     const fetchUserBooking = async () => {

@@ -25,7 +25,7 @@ export default function EditProfilePage() {
   const API_BASE =
     process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== ''
       ? process.env.NEXT_PUBLIC_API_URL
-      : 'http://localhost:3000';
+      : '';
   useEffect(() => {
     if (user) {
       setFormData({

@@ -14,7 +14,7 @@ function getToken(): string | null {
 const API_BASE =
   (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== '')
     ? process.env.NEXT_PUBLIC_API_URL
-    : 'http://localhost:3000';
+    : '';
 
 export function useCreateLodging(baseUrl = API_BASE) {
   console.log('useCreateLodging initialized with baseUrl:', baseUrl);

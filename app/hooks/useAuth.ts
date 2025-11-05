@@ -14,7 +14,7 @@ export const useAuth = () => {
   const API_BASE =
     process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== ''
       ? process.env.NEXT_PUBLIC_API_URL
-      : 'http://localhost:3000';
+      : '';
 
   const registerUser = async (email: string, password: string, userData: { name: string; roles: string[] }) => {
     setLoading(true);
@@ -187,7 +187,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   // Mantén la lógica tal como estaba en tus métodos
   registerUser: async (email, password, userData) => {
     set({ loading: true });
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
     try {
       const requestData = { email, password, ...userData };
       console.log('Sending data to register:', requestData);
@@ -219,7 +219,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   loginUser: async (email, password) => {
     set({ loading: true });
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
     try {
       const requestData = { email, password };
       console.log('Sending data to login:', requestData);
@@ -252,7 +252,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   verifyTwoFactor: async (email, password, twoFactorCode) => {
     set({ loading: true });
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
     try {
       const requestData = { email, password, token: twoFactorCode };
       const response = await fetch(`${API_BASE}/auth/2fa/verify`, {

@@ -86,7 +86,7 @@ export const useBookingStore = create<Store>((set) => ({
 
   // Fetch para el precio del alojamiento
   fetchListingPrice: async (listingId) => {
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
     set({ loadingPrice: true, error: '' });
 
     try {
@@ -118,7 +118,7 @@ export const useBookingStore = create<Store>((set) => ({
 
   // Fetch para las reservas
   fetchBookings: async (listingId) => {
-    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? '';
     try {
       const res = await fetch(`${API_BASE}/bookings/lodging/${encodeURIComponent(listingId)}`);
       if (!res.ok) throw new Error(`Error fetching bookings: ${res.status}`);

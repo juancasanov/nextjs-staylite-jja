@@ -53,7 +53,7 @@ interface AuthState {
 const API_BASE =
   (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== '')
     ? process.env.NEXT_PUBLIC_API_URL
-    : 'http://localhost:3000';
+    : '';
 
 export const useAuthStore = create<AuthState>()(
   persist(

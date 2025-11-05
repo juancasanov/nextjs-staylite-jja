@@ -42,7 +42,7 @@ export default function useFetchLodging(id?: string, options?: Options) {
   const abortRef = useRef<AbortController | null>(null);
 
   const apiBase = useMemo(
-    () => process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000',
+    () => process.env.NEXT_PUBLIC_API_URL ?? '',
     []
   );
 

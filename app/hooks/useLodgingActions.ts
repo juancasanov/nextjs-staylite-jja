@@ -24,7 +24,7 @@ export const useLodgingActions = () => {
   const API_BASE =
     process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== ''
       ? process.env.NEXT_PUBLIC_API_URL
-      : 'http://localhost:3000';
+      : '';
 
   const uploadImages = async (files: File[]): Promise<string[]> => {
     if (!files?.length) return [];

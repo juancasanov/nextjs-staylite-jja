@@ -210,7 +210,7 @@ export default function useEditListingLogic(listingId?: string | string[]) {
         return;
       }
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? '';
       const res = await fetch(`${apiBase}/lodgings/${resolvedListingId}`, {
         method: 'PUT',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -249,7 +249,7 @@ export default function useEditListingLogic(listingId?: string | string[]) {
       setToggling(true);
       setLocalActive(!prev);
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? '';
       let res = await fetch(`${apiBase}/lodgings/${encodeURIComponent(String(resolvedListingId))}/changeActive`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, Accept: 'application/json', 'Content-Type': 'application/json' },
@@ -302,7 +302,7 @@ export default function useEditListingLogic(listingId?: string | string[]) {
       if (!token) { setErrorMessage(['Falta autenticación. Por favor inicia sesión.']); return; }
       if (!resolvedListingId) { setErrorMessage(['El ID del listing no está disponible.']); return; }
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+      const apiBase = process.env.NEXT_PUBLIC_API_URL ?? '';
       const url = `${apiBase}/lodgings/${resolvedListingId}`;
 
       const res = await fetch(url, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });

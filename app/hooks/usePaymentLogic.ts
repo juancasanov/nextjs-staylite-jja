@@ -51,7 +51,7 @@ const PAYMENT_METHODS: PaymentMethod[] = [
 export default function usePaymentLogic(bookingIdFromQuery?: string, apiBaseIn?: string) {
   const API_BASE =
     (typeof process !== 'undefined' && (apiBaseIn ?? (process.env.NEXT_PUBLIC_API_BASE_URL || '')).trim())
-    || 'http://localhost:3000';
+    || '';
 
   const [localBooking, setLocalBooking] = useState<BookingLocal | null>(null);
   const [bookingApi, setBookingApi] = useState<BookingApi | null>(null);
