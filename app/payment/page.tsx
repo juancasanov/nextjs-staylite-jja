@@ -1,12 +1,13 @@
 'use client'
 
+import { Suspense } from "react";
 import PaymentCreate from "./PaymentCreate";
 
 const PaymentPage = () => {
   return (
-    <div>
+    <Suspense fallback={<div>Cargando...</div>}>
       <PaymentCreate />
-    </div>
+    </Suspense>
   );
 };
 

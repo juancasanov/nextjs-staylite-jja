@@ -1,10 +1,24 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import ListingCard from './components/Listing/ListingCard';
 import { useRouter } from 'next/navigation';
 import { Navbar } from './components/NavBar/NavBar';
 import type { OnSearchFn } from './components/types/search';
+
+function NavbarSkeleton() {
+  return (
+    <nav className="bg-blue-600 w-full flex justify-between items-center mx-auto px-8 py-1">
+      <div className="flex items-center">
+        <div className="w-32 h-10 bg-white/20 rounded animate-pulse" />
+      </div>
+      <div className="flex items-center space-x-3">
+        <div className="w-24 h-8 bg-white/20 rounded-full animate-pulse" />
+        <div className="w-10 h-10 bg-white/20 rounded-full animate-pulse" />
+      </div>
+    </nav>
+  );
+}
 
 // ---------- Roles tipados y utilidades ----------
 export const ROLES = ['host', 'guest', 'admin'] as const;
@@ -98,7 +112,7 @@ function readUserId(): string | null {
             }
           }
         }
-      } catch {}
+      } catch { }
     }
 
     const token = localStorage.getItem(LS.AUTH_TOKEN) || null;
@@ -166,7 +180,7 @@ const HomePage = () => {
         if (!r.ok) continue;
         const data = await r.json();
         if (Array.isArray(data)) return data;
-      } catch {}
+      } catch { }
     }
 
     // fallback final
@@ -222,61 +236,63 @@ const HomePage = () => {
   }, [fetchLodgings, isHostView]);
 
   const handleSearch: OnSearchFn = async (
-  destination,
-  checkIn,
-  checkOut,
-  guests,
-  _addr,
-  amenities,
-  pricePerNight
-) => {
-  try {
-    const token = localStorage.getItem(LS.AUTH_TOKEN) || null;
+    destination,
+    checkIn,
+    checkOut,
+    guests,
+    _addr,
+    amenities,
+    pricePerNight
+  ) => {
+    try {
+      const token = localStorage.getItem(LS.AUTH_TOKEN) || null;
 
-    // Si no hay ningún filtro, restauramos todos los alojamientos
-    const noFilters =
-      !destination?.trim() &&
-      !checkIn &&
-      !checkOut &&
-      (!guests || guests <= 0) &&
-      !amenities?.trim() &&
-      (!pricePerNight || pricePerNight <= 0);
+      // Si no hay ningún filtro, restauramos todos los alojamientos
+      const noFilters =
+        !destination?.trim() &&
+        !checkIn &&
+        !checkOut &&
+        (!guests || guests <= 0) &&
+        !amenities?.trim() &&
+        (!pricePerNight || pricePerNight <= 0);
 
-    if (noFilters) {
-      setSearchResults(lodgings); // reset
-      return;
+      if (noFilters) {
+        setSearchResults(lodgings); // reset
+        return;
+      }
+
+      const params = new URLSearchParams();
+      if (checkIn) params.append('checkIn', checkIn);
+      if (checkOut) params.append('checkOut', checkOut);
+      if (guests) params.append('guests', guests.toString());
+      if (destination) params.append('destination', destination);
+      if (amenities) params.append('amenities', amenities);
+      if (pricePerNight && pricePerNight > 0) params.append('maxPrice', pricePerNight.toString());
+
+      const res = await fetch(`${API_BASE}/bookings/search?${params.toString()}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        console.error('Error fetching listings:', res.status, await res.text());
+        setSearchResults([]); // vaciar resultados en caso de error
+        return;
+      }
+
+      const listings = await res.json();
+      setSearchResults(listings);
+    } catch (error) {
+      console.error('Error searching listings:', error);
+      setSearchResults([]);
     }
-
-    const params = new URLSearchParams();
-    if (checkIn) params.append('checkIn', checkIn);
-    if (checkOut) params.append('checkOut', checkOut);
-    if (guests) params.append('guests', guests.toString());
-    if (destination) params.append('destination', destination);
-    if (amenities) params.append('amenities', amenities);
-    if (pricePerNight && pricePerNight > 0) params.append('maxPrice', pricePerNight.toString());
-
-    const res = await fetch(`${API_BASE}/bookings/search?${params.toString()}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-
-    if (!res.ok) {
-      console.error('Error fetching listings:', res.status, await res.text());
-      setSearchResults([]); // vaciar resultados en caso de error
-      return;
-    }
-
-    const listings = await res.json();
-    setSearchResults(listings);
-  } catch (error) {
-    console.error('Error searching listings:', error);
-    setSearchResults([]);
-  }
-};
+  };
 
 
   return (
     <div>
-      <Navbar onSearch={handleSearch} />
+      <Suspense fallback={<NavbarSkeleton />}>
+        <Navbar onSearch={handleSearch} />
+      </Suspense>
       <div className="max-w-6xl mx-auto p-6">
         <h2 className="text-2xl font-semibold mb-6">
           {isHostView ? 'Mis alojamientos' : 'Alojamientos populares'}

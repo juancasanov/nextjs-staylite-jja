@@ -1,7 +1,7 @@
 // pages/listing/new OR app/(...)/NewListingPage.tsx (usa la ruta que ya tienes)
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/app/components/NavBar/NavBar';
 import { useCreateLodging } from '@/app/hooks/useCreateLodging';
@@ -16,6 +16,20 @@ import StepAmenities from '@/app/components/Listing/StepAmenities';
 import StepPhotos from '@/app/components/Listing/StepPhotos';
 import StepReview from '@/app/components/Listing/StepReview';
 import BottomBar from '@/app/components/Listing/BottomBar';
+
+function NavbarSkeleton() {
+  return (
+    <nav className="bg-blue-600 w-full flex justify-between items-center mx-auto px-8 py-1">
+      <div className="flex items-center">
+        <div className="w-32 h-10 bg-white/20 rounded animate-pulse" />
+      </div>
+      <div className="flex items-center space-x-3">
+        <div className="w-24 h-8 bg-white/20 rounded-full animate-pulse" />
+        <div className="w-10 h-10 bg-white/20 rounded-full animate-pulse" />
+      </div>
+    </nav>
+  );
+}
 
 function readRoles(): string[] {
   try {
@@ -162,7 +176,9 @@ export default function NewListingPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Navbar onSearch={() => {}} />
+      <Suspense fallback={<NavbarSkeleton />}>
+        <Navbar onSearch={() => { }} />
+      </Suspense>
 
       <main className="container mx-auto px-4 py-10">
         {renderStep()}

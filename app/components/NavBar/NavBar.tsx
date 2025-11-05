@@ -1,13 +1,32 @@
 'use client';
 
 import 'font-awesome/css/font-awesome.min.css';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { HostAuthModal } from '../auth/HostAuthModal';
 import { SearchBar } from './SearchBar';
 import type { OnSearchFn } from '../types/search';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/app/stores/stores';
+
+// Componente interno que usa useSearchParams
+function NavbarWithSearchParams({
+  onAuthOpenChange
+}: {
+  onAuthOpenChange: (open: boolean, tab: 'signup' | 'login') => void
+}) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const shouldOpen = searchParams.get('authOpen') === '1';
+    const tab = (searchParams.get('tab') as 'signup' | 'login') || 'signup';
+    if (shouldOpen) {
+      onAuthOpenChange(true, tab);
+    }
+  }, [searchParams, onAuthOpenChange]);
+
+  return null;
+}
 
 export const Navbar = ({ onSearch }: { onSearch: OnSearchFn }) => {
   // UI / modal local
@@ -21,7 +40,6 @@ export const Navbar = ({ onSearch }: { onSearch: OnSearchFn }) => {
 
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isListing = pathname?.startsWith('/listing/');
 
   const API_BASE =
@@ -225,10 +243,9 @@ export const Navbar = ({ onSearch }: { onSearch: OnSearchFn }) => {
     const tokenLocal = localStorage.getItem('authToken');
     const nameLocal = localStorage.getItem('userName');
     if (tokenLocal && nameLocal) {
-      setToken(tokenLocal); // sincroniza store
+      setToken(tokenLocal);
       setName(nameLocal);
     } else {
-      // limpiar store si no hay token en localStorage
       if (!tokenLocal) setToken(null);
     }
   }, []);
@@ -252,16 +269,12 @@ export const Navbar = ({ onSearch }: { onSearch: OnSearchFn }) => {
 
   useEffect(() => { setRoles(readRoles()); }, [token]);
 
-  useEffect(() => {
-    const shouldOpen = searchParams.get('authOpen') === '1';
-    const tabParam = (searchParams.get('tab') as 'signup' | 'login') || 'signup';
-    if (shouldOpen) {
-      setAuthTab(tabParam);
-      setAuthOpen(true);
-    }
-  }, [searchParams]);
-
   // ------------------ handlers ------------------
+  const handleAuthOpenChange = (open: boolean, tab: 'signup' | 'login') => {
+    setAuthTab(tab);
+    setAuthOpen(open);
+  };
+
   const handleGoProfile = () => {
     if (!token) {
       setAuthTab('login');
@@ -382,7 +395,7 @@ export const Navbar = ({ onSearch }: { onSearch: OnSearchFn }) => {
     ];
     keys.forEach((k) => localStorage.removeItem(k));
     try { sessionStorage.clear(); } catch { }
-    logoutUser(); // limpia state en zustand
+    logoutUser();
     setRoles([]);
     setAuthOpen(false);
     setAuthTab('signup');
@@ -402,6 +415,11 @@ export const Navbar = ({ onSearch }: { onSearch: OnSearchFn }) => {
   // ------------------ JSX ------------------
   return (
     <>
+      {/* Envolver solo la parte que usa useSearchParams */}
+      <Suspense fallback={null}>
+        <NavbarWithSearchParams onAuthOpenChange={handleAuthOpenChange} />
+      </Suspense>
+
       <nav className={`bg-blue-600 w-full flex justify-between items-center mx-auto px-8 transition-all duration-300 ${isListing ? 'py-2' : 'py-1'}`}>
         <div className="flex items-center">
           <Link href="/" className="block">
@@ -517,7 +535,6 @@ export const Navbar = ({ onSearch }: { onSearch: OnSearchFn }) => {
           }
           setRoles(readRoles());
           setUserId(readUserId());
-          // opcional: resetear estado UI del auth en el store
           resetAuthState();
         }}
         setIsAuthenticated={(v) => {
@@ -544,8 +561,6 @@ export const Navbar = ({ onSearch }: { onSearch: OnSearchFn }) => {
 
           setName(resolved ?? '');
         }}
-
-
       />
     </>
   );
